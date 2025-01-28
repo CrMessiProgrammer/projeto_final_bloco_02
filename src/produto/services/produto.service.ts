@@ -35,7 +35,7 @@ export class ProdutoService{
 
         // Checar se a produto não foi encontrada
         if (!produto)
-            throw new HttpException('Produto não encontrado!', HttpStatus.NOT_FOUND);
+            throw new HttpException('(⚠️)Produto não encontrado!', HttpStatus.NOT_FOUND);
 
         // Retornar a produto, caso ela exista
         return produto;
@@ -44,7 +44,7 @@ export class ProdutoService{
     }
 
     async findByNome(nome: string): Promise<Produto[]>{
-        return await this.produtoRepository.find({
+        let produto = await this.produtoRepository.find({
             where:{
                 nome: ILike(`%${nome}%`)
             },
@@ -52,8 +52,12 @@ export class ProdutoService{
                 categoria: true,
             }
         })
-
         // SELECT * FROM tb_postagens WHERE nome LIKE '%nome%';
+
+        if (!produto)
+            throw new HttpException('(⚠️)Nenhum produto encontrado!', HttpStatus.NOT_FOUND);
+        
+        return produto;
     }
 
     async create(produto: Produto): Promise<Produto>{
@@ -64,7 +68,7 @@ export class ProdutoService{
             let categoria = await this.categoriaService.findById(produto.categoria.id)
 
             if(!categoria)
-                throw new HttpException('Categoria não foi encontrado!', HttpStatus.NOT_FOUND)
+                throw new HttpException('(⚠️)Categoria não foi encontrado!', HttpStatus.NOT_FOUND)
 
             return await this.produtoRepository.save(produto);
         }
@@ -81,7 +85,7 @@ export class ProdutoService{
         
         // Verifica se a produto existe
         if (!buscaProduto || !produto.id)
-            throw new HttpException('Produto não foi encontrado!', HttpStatus.NOT_FOUND)
+            throw new HttpException('(⚠️)Produto não foi encontrado!', HttpStatus.NOT_FOUND)
 
          // Caso o categoria tenha sido preenchido
         if (produto.categoria){
@@ -89,7 +93,7 @@ export class ProdutoService{
             let categoria = await this.categoriaService.findById(produto.categoria.id)
 
             if(!categoria)
-                throw new HttpException('Categoria não foi encontrada!', HttpStatus.NOT_FOUND)
+                throw new HttpException('(⚠️)Categoria não foi encontrada!', HttpStatus.NOT_FOUND)
 
             return await this.produtoRepository.save(produto);
         }
@@ -105,7 +109,7 @@ export class ProdutoService{
         let buscaProduto: Produto = await this.findById(id);
         
         if (!buscaProduto)
-            throw new HttpException('Produto não foi encontrado!', HttpStatus.NOT_FOUND)
+            throw new HttpException('(⚠️)Produto não foi encontrado!', HttpStatus.NOT_FOUND)
 
         return await this.produtoRepository.delete(id);
         
